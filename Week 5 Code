@@ -1,0 +1,116 @@
+class Song {
+    constructor(name) {          //Class 1 of 2 (defines songs that will be pushed into songs[])
+        this.name = name;
+    }                               //These classes will be objects when we create them in the program (objects = instances of classes)
+}
+class Playlist {                                //Class 2 of 2
+    constructor(playlistName) {
+        this.playlistName = playlistName;
+        this.songs = [];                        //Array 1 of 2 (for adding multiple songs to playlists)
+    }
+}
+class Menu {                    //Holds the entire functionality of the project grouped together
+    constructor () {
+        this.playlists = [];                            //Array 2 of 2 (for adding multiple playlists to an array we will be able to view and edit with functions to access on the main menu)
+        this.selectedPlaylist = null;
+    }
+    start() {
+        let selection = this.mainMenuOptions();             //guides the user through the options
+        while (selection != 0) {
+            switch (selection)  {
+                case '1':
+                    this.createPlaylist();
+                    break;
+                case '2':
+                    this.selectPlaylist();
+                    break;
+                case '3':
+                    this.viewPlaylists();
+                    break;
+                case '4':
+                    this.deletePlaylist();
+                default:
+                    selection = 0;
+            }
+            selection = this.mainMenuOptions();
+        }
+        alert('Thank you for listening! See you later!')
+    }
+    mainMenuOptions() {                     //displays the visual page when you first open the application - make sure correlates to switch (selection)
+        return prompt(`
+        Welcome to your Playlist Editor! What would you like to do today?
+                0) Exit
+                1) Create a New Playlist
+                2) Select a Playlist (Add/Delete Songs)
+                3) View all Playlists
+                4) Delete a Playlist
+        `)
+    }
+    createPlaylist() {                  //prompts what should the name of the new playlist be and adds it to the playlists array under the class Menu which can be accessed later
+        let name = prompt('What is the name of your new playlist?');
+        this.playlists.push(new Playlist(name));
+    }
+    playListMenuOptions(playlistInfo) {                            //this function appears after selecting the select playlist options
+        return prompt(`
+        What would you like to do to your playlist?
+        0) Go back
+        1) Add a Song
+        2) Delete a Song
+        _____________________________________________
+        ${playlistInfo}
+        `);
+    }
+    viewPlaylists() {                                             //iterates through the length of the playlists array to show the playlists
+        let playlistString = '';
+        for (let i = 0; i < this.playlists.length; i++) {
+            playlistString += i + ') ' + this.playlists[i].playlistName + '\n';
+        }
+        alert (playlistString);
+    }
+    selectPlaylist() {
+        let index = prompt('Please enter the index of the playlist you want to see:');
+        if (index > -1 && index < this.playlists.length) {              //iterates through the playlists
+            this.selectedPlaylist = this.playlists[index];                  //shows all the possible playlists the user created
+            let description = 'Playlist name: ' + this.selectedPlaylist.playlistName + '\n';        //visual representation
+            for (let i = 0; i < this.selectedPlaylist.songs.length; i++) {
+                description += i + ') ' + this.selectedPlaylist.songs[i] + '\n';
+            }
+            let selection = this.playListMenuOptions(description);          //correlates to template literal on playListMenuOptions to call the other two functions
+            switch (selection) {
+                case '1':
+                    this.addSong();
+                    break;
+                case '2':
+                    this.deleteSong();
+            }
+        }
+    }
+    addSong() {
+        let name = prompt('What is the song you want to add to your playlist?');
+        this.selectedPlaylist.songs.push(name);             //uses push() to take the name the user put in and pushes it to the songs[]
+    }
+    deleteSong() {
+        let index = prompt('Please enter the index of the song you want to delete:');
+        if (index > -1 && index < this.selectedPlaylist.songs.length) {
+            this.selectedPlaylist.songs.splice(index, 1);           //uses splice(user input index through the prompt, only perform action once by default)
+        }
+    }
+    deletePlaylist() {
+        let index = prompt('Please enter the index of the playlist you want to delete:');
+        if (index > -1 && index < this.playlists.length) {
+            this.playlists.splice(index, 1);
+        }
+    }
+}
+let menu = new Menu();      //creates the menu as a new object under the menu class so that it restarts fresh when the user opens it
+menu.start();               //takes the object and leads us to the start function that takes us to the main menu page
+/* Functions we needed to create (made a list while doing the switch statement)
+mainMenuOptions()
+createPlaylist()
+selectPlaylist()
+    playListMenuOptions()
+        addSong()
+        deleteSong()
+viewPlaylists()
+deletePlaylists()
+*/
